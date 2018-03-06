@@ -22,6 +22,7 @@ const get_alyun_api = (hostname, path) => {
       res.on('end', () => {
         console.timeEnd('get_alyun_api')
         try {
+          // console.log(rawData)
           const data = JSON.parse(rawData)
           resolve(data)
         } catch (e) {

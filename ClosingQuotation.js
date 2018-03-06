@@ -22,7 +22,7 @@ const hj = schedule.scheduleJob('0 10 18 * * 0-5', function(){
 
 // 08:20 播报天气情况
 const tq = schedule.scheduleJob('0 20 8 * * 0-5', () => {
-  get_alyun_api('/weather/query?&location=40.0290174743,116.3471711919').then((weatherData) => {
+  get_alyun_api('jisutianqi.market.alicloudapi.com', '/weather/query?&location=40.0290174743,116.3471711919').then((weatherData) => {
     const result = weatherData.result
     const sendData = `天气情况: ${result.weather}\n最高气温: ${result.temphigh}\n最低气温: ${result.templow}\n风力等级: ${result.windpower}\n污染程度: ${result.aqi.quality}`
     send_message(sendData, 0, '2BTviSRpLh-mH3MS7E4PmI_PUIV1JoVhQJvxwnHpUC0')
