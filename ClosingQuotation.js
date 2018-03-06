@@ -1,7 +1,7 @@
 'use strict'
 const { send_mpnews, send_message } = require("./api/weixin.js")
 const { get_alyun_api } = require("./api/aliyun.js")
-const { get_SZZZ } = require("./api/other.js")
+const { get_SZZZ, get_HTML, cutStringArray, cutString } = require("./api/other.js")
 
 const https = require("https")
 const http  = require("http")
@@ -46,5 +46,32 @@ const szzs = schedule.scheduleJob('0 11 18 * * 1-5', () => {
     const result = res.data[0]
     const sendData = `变化幅度: ${result.netChangeRatio.toFixed(2)}%\n收盘价格: ${result.close.toFixed(2)}\n开盘价格: ${result.open.toFixed(2)}\n最低价格: ${result.low.toFixed(2)}\n最高价格: ${result.high.toFixed(2)}`
     send_message(sendData, 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs')
+  })
+})
+
+// 21:10 github今日热点 待完善
+const szzs = schedule.scheduleJob('0 10 21 * * *', () => {
+  get_HTML('https://github.com/trending').then((data) => {
+    const title = cutStringArray(data, 'class="text-normal">', '\n')
+    const text = cutStringArray(data, 'm-0 pr-4">\n        ', '      </p>')
+    // console.log(title)
+    let sendData = ''
+    for(let item in title) {
+      let dataTemp = title[item] + '\n' + text[item]
+      console.log(text[item])
+      // 去除人名和库中间的多余字符
+      dataTemp = dataTemp.replace(/\<\/span>/g, '')
+      // 垃圾代码暂时这么写吧
+      if (dataTemp.indexOf('g-emoji') >= 0) {
+        const cutTemp = '<g-emoji' + cutString(dataTemp, '<g-emoji', '</g-emoji>') + '</g-emoji>'
+        dataTemp = dataTemp.replace(cutTemp, '')
+      }
+      if (dataTemp.indexOf('g-emoji') >= 0) {
+        const cutTemp = '<g-emoji' + cutString(dataTemp, '<g-emoji', '</g-emoji>') + '</g-emoji>'
+        dataTemp = dataTemp.replace(cutTemp, '')
+      }
+      sendData += dataTemp + '\n-----------------\n'
+    }
+    send_message(sendData, 1000005, 'fc9UpYBtGq3GHb9mg8oXu5ntBOALF1ztM26nmJcELv4')
   })
 })
