@@ -50,28 +50,42 @@ const szzs = schedule.scheduleJob('0 11 18 * * 1-5', () => {
 })
 
 // 21:10 github今日热点 待完善
-const szzs = schedule.scheduleJob('0 10 21 * * *', () => {
-  get_HTML('https://github.com/trending').then((data) => {
-    const title = cutStringArray(data, 'class="text-normal">', '\n')
-    const text = cutStringArray(data, 'm-0 pr-4">\n        ', '      </p>')
-    // console.log(title)
-    let sendData = ''
-    for(let item in title) {
-      let dataTemp = title[item] + '\n' + text[item]
-      console.log(text[item])
-      // 去除人名和库中间的多余字符
-      dataTemp = dataTemp.replace(/\<\/span>/g, '')
-      // 垃圾代码暂时这么写吧
-      if (dataTemp.indexOf('g-emoji') >= 0) {
-        const cutTemp = '<g-emoji' + cutString(dataTemp, '<g-emoji', '</g-emoji>') + '</g-emoji>'
-        dataTemp = dataTemp.replace(cutTemp, '')
-      }
-      if (dataTemp.indexOf('g-emoji') >= 0) {
-        const cutTemp = '<g-emoji' + cutString(dataTemp, '<g-emoji', '</g-emoji>') + '</g-emoji>'
-        dataTemp = dataTemp.replace(cutTemp, '')
-      }
-      sendData += dataTemp + '\n-----------------\n'
+// const jrrd = schedule.scheduleJob('0 10 21 * * *', () => {
+  // 递归去除表情
+  function removeEmoj (str) {
+    if (str.indexOf('g-emoji') >= 0) {
+      const cutTemp = '<g-emoji' + cutString(str, '<g-emoji', '</g-emoji>') + '</g-emoji>'
+      str = str.replace(cutTemp, '')
+      return removeEmoj(str)
+    } else {
+      return str
     }
-    send_message(sendData, 1000005, 'fc9UpYBtGq3GHb9mg8oXu5ntBOALF1ztM26nmJcELv4')
+  }
+  get_HTML('https://github.com/trending').then((html) => {
+    // 截取出部分文字
+    const data = cutString(html, '<ol', 'ol>')
+    let liData = cutStringArray(data, '<li', 'li>')
+    for(let item in liData) {
+
+    }
+    liData.forEach(element => {
+      element = element.replace(/\n/g, '')
+      element = element.replace(/  /g, '')
+      const title = cutString(element, '</span>', '</a>')
+      let text = cutString(element, 'm-0 pr-4">', '</p>')
+      text = removeEmoj(text)
+      // 截取热度
+      const startBox = cutString(element, 'd-inline-block float-sm-right', 'span>')
+      const start = cutString(startBox, '4.74z"/></svg>', ' stars today')
+      // 判断是否有语言
+      let sendText = null
+      if (element.indexOf('programmingLanguage') > 0) {
+        const programmingLanguage = cutString(element, 'programmingLanguage">', '</span>')
+        sendText = `名称:${title}\n热度:${start}  语言:${programmingLanguage}\n描述:${text}`
+      } else {
+        sendText = `名称:${title}\n热度:${start}\n描述:${text}`
+      }
+      send_message(sendText, 1000005, 'fc9UpYBtGq3GHb9mg8oXu5ntBOALF1ztM26nmJcELv4')
+    })
   })
-})
+// })

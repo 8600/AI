@@ -8,7 +8,6 @@ const corpid     = 'wx45fdc4d913745034'
 
 const get_access_token = (corpid, corpsecret) => {
   return new Promise((resolve, reject) => {
-    console.time('get_access_token')
     const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${corpid}&corpsecret=${corpsecret}`
     https.get(url, function (res) {  
       let datas = [], size = 0;  
@@ -22,7 +21,6 @@ const get_access_token = (corpid, corpsecret) => {
         const result = iconv.decode(buff, "utf8")
         const resData = JSON.parse(result)
         if (resData.errcode === 0) {
-          console.timeEnd('get_access_token')
           // 更新缓存
           const access_token = resData.access_token
           resolve(access_token)
