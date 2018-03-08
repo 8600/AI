@@ -50,7 +50,7 @@ const szzs = schedule.scheduleJob('0 11 18 * * 1-5', () => {
 })
 
 // 21:10 github今日热点 待完善
-// const jrrd = schedule.scheduleJob('0 10 21 * * *', () => {
+const jrrd = schedule.scheduleJob('0 10 21 * * *', () => {
   // 递归去除表情
   function removeEmoj (str) {
     if (str.indexOf('g-emoji') >= 0) {
@@ -88,4 +88,4 @@ const szzs = schedule.scheduleJob('0 11 18 * * 1-5', () => {
       send_message(sendText, 1000005, 'fc9UpYBtGq3GHb9mg8oXu5ntBOALF1ztM26nmJcELv4')
     })
   })
-// })
+})
