@@ -1,5 +1,5 @@
 'use strict'
-const { send_mpnews, send_message } = require("./api/weixin.js")
+const weixin = require("./api/weixin.js")
 const { get_alyun_api } = require("./api/aliyun.js")
 const { get_SZZZ, get_HTML, cutStringArray, cutString } = require("./api/other.js")
 
@@ -16,7 +16,7 @@ const hj = schedule.scheduleJob('0 10 18 * * 0-5', function(){
   get_alyun_api('jisugold.market.alicloudapi.com', '/gold/shgold').then((AuData) => {
     const AuPrice =  AuData.result[0]
     const sendData = `变化幅度: ${AuPrice.changepercent}\n当前价格: ${AuPrice.price}\n开盘价格: ${AuPrice.openingprice}\n最高价格: ${AuPrice.maxprice}\n最低价格: ${AuPrice.minprice}`
-    send_message(sendData, 1000002, 'tR2wAukUgH1r4uM1D9UoxlUlnrnsTZeA1CnWurf7EiA')
+    weixin.send_text(sendData, 1000002, 'tR2wAukUgH1r4uM1D9UoxlUlnrnsTZeA1CnWurf7EiA')
   })
 })
 
@@ -25,7 +25,7 @@ const tq = schedule.scheduleJob('0 20 8 * * 0-5', () => {
   get_alyun_api('jisutianqi.market.alicloudapi.com', '/weather/query?&location=40.0290174743,116.3471711919').then((weatherData) => {
     const result = weatherData.result
     const sendData = `天气情况: ${result.weather}\n最高气温: ${result.temphigh}\n最低气温: ${result.templow}\n风力等级: ${result.windpower}\n污染程度: ${result.aqi.quality}`
-    send_message(sendData, 0, '2BTviSRpLh-mH3MS7E4PmI_PUIV1JoVhQJvxwnHpUC0')
+    weixin.send_text(sendData, 0, '2BTviSRpLh-mH3MS7E4PmI_PUIV1JoVhQJvxwnHpUC0')
   })
 })
 
@@ -37,7 +37,7 @@ const wxjx = schedule.scheduleJob('0 0 22 * * *', () => {
     for (let i = 0; i < 5; i++) {
     sendData += `${i}. <a href=\"${newsList[i].url}">${newsList[i].title}</a>\n`
     }
-    send_message(sendData, 1000003, 'k_cPkWtZ5flbl8nuL0qVLQJQtBwcEuXVdn4LoQ7x7NE')
+    weixin.send_text(sendData, 1000003, 'k_cPkWtZ5flbl8nuL0qVLQJQtBwcEuXVdn4LoQ7x7NE')
   })
 })
 // 18:11 播报上证指数
@@ -45,7 +45,7 @@ const szzs = schedule.scheduleJob('0 11 18 * * 1-5', () => {
   get_SZZZ().then((res) => {
     const result = res.data[0]
     const sendData = `变化幅度: ${result.netChangeRatio.toFixed(2)}%\n收盘价格: ${result.close.toFixed(2)}\n开盘价格: ${result.open.toFixed(2)}\n最低价格: ${result.low.toFixed(2)}\n最高价格: ${result.high.toFixed(2)}`
-    send_message(sendData, 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs')
+    weixin.send_text(sendData, 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs')
   })
 })
 
@@ -85,7 +85,8 @@ const jrrd = schedule.scheduleJob('0 10 21 * * *', () => {
       } else {
         sendText = `名称:${title}\n热度:${start}\n描述:${text}`
       }
-      send_message(sendText, 1000005, 'fc9UpYBtGq3GHb9mg8oXu5ntBOALF1ztM26nmJcELv4')
+      weixin.send_text(sendText, 1000005, 'fc9UpYBtGq3GHb9mg8oXu5ntBOALF1ztM26nmJcELv4')
     })
   })
 })
+weixin.send_img('http://j4.dfcfw.com/charts/pic6/110022.png', 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs')
