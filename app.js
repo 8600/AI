@@ -89,4 +89,17 @@ const jrrd = schedule.scheduleJob('0 10 21 * * *', () => {
     })
   })
 })
-weixin.send_img('http://j4.dfcfw.com/charts/pic6/110022.png', 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs')
+// weixin.send_img('http://j4.dfcfw.com/charts/pic6/110022.png', 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs')
+const menuData = {
+  "button":[
+    {    
+      "type":"click",
+      "name":"获取数据",
+      "key":"V1001_TODAY_MUSIC"
+    }
+  ]
+}
+// 设置菜单
+weixin.create_menu(menuData, 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs').then((data) => {
+  console.log('设置成功')
+})

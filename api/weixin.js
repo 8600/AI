@@ -57,10 +57,13 @@ const $post = (options, message, encoded = 'utf-8') => {
 const get_access_token = (corpid, corpsecret) => {
   return new Promise((resolve, reject) => {
     const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${corpid}&corpsecret=${corpsecret}`
+    console.time('获取access_token')
     $get(url).then((data) => {
+      console.timeEnd('获取access_token')
       if (data.errcode === 0) {
         // 更新缓存
         const access_token = data.access_token
+        console.log(`获取到最新access_token：${access_token}`)
         resolve(access_token)
       } else {
         console.error(data.errcode)
@@ -187,5 +190,68 @@ exports.send_img = (imgUrl, agentid, corpsecret) => {
       }
     }
     send_message(message, corpsecret)
+  })
+}
+
+// 设置菜单
+exports.create_menu = (menuData, agentid, corpsecret) => {
+  console.time('设置菜单')
+  return new Promise((resolve, reject) => {
+    get_access_token(corpid, corpsecret).then((access_token) => {
+      const menuDataOption = JSON.stringify(menuData)
+      const options = {
+        hostname: 'qyapi.weixin.qq.com',
+        port: 443,
+        path: `/cgi-bin/menu/create?access_token=${access_token}&agentid=${agentid}`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Length': Buffer.byteLength(menuDataOption, 'utf8')
+        }
+      }
+      $post(options, menuDataOption).then((data) => {
+        console.timeEnd('设置菜单')
+        if (data.errcode === 0) {
+          resolve(data)
+        } else {
+          console.log(data)
+          reject(data)
+        }
+      })
+    })
+  })
+}
+
+// 获取菜单
+exports.get_menu = (agentid, corpsecret) => {
+  console.time('设置菜单')
+  return new Promise((resolve, reject) => {
+    get_access_token(corpid, corpsecret).then((access_token) => {
+      $get(`https://qyapi.weixin.qq.com/cgi-bin/menu/get?access_token=${access_token}&agentid=${agentid}`).then((data) => {
+        console.timeEnd('设置菜单')
+        if (data.errcode === 0) {
+          resolve(data.button)
+        } else {
+          reject(data)
+        }
+      })
+    })
+  })
+}
+
+// 删除菜单
+exports.delete_menu = (agentid, corpsecret) => {
+  console.time('删除菜单')
+  return new Promise((resolve, reject) => {
+    get_access_token(corpid, corpsecret).then((access_token) => {
+      $get(`https://qyapi.weixin.qq.com/cgi-bin/menu/delete?access_token=${access_token}&agentid=${agentid}`).then((data) => {
+        console.timeEnd('删除菜单')
+        if (data.errcode === 0) {
+          resolve(data.button)
+        } else {
+          reject(data)
+        }
+      })
+    })
   })
 }
