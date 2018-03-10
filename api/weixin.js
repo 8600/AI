@@ -3,6 +3,11 @@ const https = require("https")
 const http  = require("http")
 const iconv = require("iconv-lite")
 
+// 超时时间
+const overtime = 600
+// access_token缓存
+let access_token_cache = {}
+
 const corpid     = 'wx45fdc4d913745034'
 
 // GET请求
@@ -55,14 +60,29 @@ const $post = (options, message, encoded = 'utf-8') => {
 
 // 获取微信access_token
 const get_access_token = (corpid, corpsecret) => {
+  // console.log(access_token_cache)
   return new Promise((resolve, reject) => {
+    // 判断缓存中是否包含corpid的缓存
+    if (access_token_cache[corpid]) {
+      // 如果有缓存判断缓存是否超时
+      const nowTime = Date.parse(new Date())
+      if (nowTime - access_token_cache[corpid].time < overtime * 1000) {
+        // 没有超时则返回缓存
+        const access_token = access_token_cache[corpid].access_token
+        console.log(`缓存access_token: ${access_token}`)
+        resolve(access_token)
+        // 好像nodejs的resolve不会中断代码运行
+        return
+      }
+    }
     const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${corpid}&corpsecret=${corpsecret}`
     console.time('获取access_token')
     $get(url).then((data) => {
       console.timeEnd('获取access_token')
       if (data.errcode === 0) {
-        // 更新缓存
         const access_token = data.access_token
+        // 更新缓存
+        access_token_cache[corpid] = {time: Date.parse(new Date()), access_token}
         console.log(`获取到最新access_token：${access_token}`)
         resolve(access_token)
       } else {

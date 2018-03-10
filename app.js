@@ -101,5 +101,8 @@ const menuData = {
 }
 // 设置菜单
 weixin.create_menu(menuData, 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs').then((data) => {
-  console.log('设置成功')
+  weixin.create_menu(menuData, 1000004, 'f2dXoaXsKBYkye2m2uhav4XONZQkCx-AqtW43OGbGQs').then((data) => {
+    console.log('设置成功')
+  })
 })
+
